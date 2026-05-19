@@ -4,8 +4,8 @@
  *    See the LICENSE file in the project root for license details.     *
  ************************************************************************/
 
-import { loadSetupAPI } from "../../ffi/windows.ts"
-import type { SerialPortInfo, SerialPortListBackend } from "./common.ts"
+import { loadSetupAPI } from '../../ffi/windows.ts'
+import type { SerialPortInfo, SerialPortListBackend } from './common.ts'
 
 const DIGCF_PRESENT = 0x02
 const DIGCF_ALLCLASSES = 0x04
@@ -14,9 +14,9 @@ const SPDRP_FRIENDLYNAME = 0x0000000C
 const SPDRP_DEVICEDESC = 0x00000000
 
 function decode(buf: Uint16Array, byteLen: number): string {
-    return new TextDecoder("utf-16le")
+    return new TextDecoder('utf-16le')
         .decode(new Uint8Array(buf.buffer, 0, byteLen))
-        .replace(/\0/g, "")
+        .replace(/\0/g, '')
 }
 
 function extractCOM(text: string): string | null {
@@ -51,7 +51,7 @@ export class WindowsSerialList implements SerialPortListBackend {
 
         if (!deviceInfoSet) {
             setupapi.close?.()
-            throw new Error("SetupDiGetClassDevsW failed")
+            throw new Error('SetupDiGetClassDevsW failed')
         }
 
         try {

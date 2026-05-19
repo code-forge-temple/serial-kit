@@ -1,38 +1,35 @@
 {
-  "name": "serial-kit",
-  "version": "0.1.0",
-  "description": "Cross-platform serial port library for Deno (Linux, macOS, Windows)",
-  "license": "GPL-3.0",
-  "exports": "./mod.ts",
-  "tasks": {
-    "format": "deno fmt",
-    "lint": "deno lint",
-    "check": "deno check mod.ts src/ tests/",
-    "test": "deno test --allow-ffi --allow-read --allow-write --allow-env --env",
-    "publish": "deno publish"
-  },
-  "fmt": {
-    "files": {
-      "include": ["mod.ts", "src/**/*.ts", "tests/**/*.ts"]
+    "name": "serial-kit",
+    "version": "0.1.0",
+    "description": "Cross-platform serial port library for Deno (Linux, macOS, Windows)",
+    "license": "GPL-3.0",
+    "exports": "./mod.ts",
+    "tasks": {
+        "format": "deno fmt",
+        "lint": "deno lint",
+        "check": "deno check mod.ts src/ tests/",
+        "test": "deno test --allow-ffi --allow-read --allow-write --allow-env --env",
+        "publish": "deno publish"
     },
-    "lineWidth": 100,
-    "indentWidth": 4,
-    "semiColons": false,
-    "singleQuote": true,
-    "trailingCommas": "onlyMultiLine",
-    "useTabs": false,
-    "proseWrap": "preserve"
-  },
-  "test": {
-    "files": {
-      "include": ["tests/**/*.ts"]
+    "fmt": {
+        "lineWidth": 100,
+        "indentWidth": 4,
+        "semiColons": false,
+        "singleQuote": true,
+        "trailingCommas": "onlyMultiLine",
+        "useTabs": false,
+        "proseWrap": "preserve"
+    },
+    "include": [
+        "mod.ts",
+        "src/**/*.ts",
+        "tests/**/*.ts"
+    ],
+    "compilerOptions": {
+        "strict": true,
+        "noImplicitAny": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true
     }
-  },
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
-  }
 }

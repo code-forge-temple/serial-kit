@@ -4,4 +4,4 @@
  *    See the LICENSE file in the project root for license details.     *
  ************************************************************************/
 
-export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))

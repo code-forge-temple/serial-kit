@@ -8,27 +8,27 @@ export let kernel32: any = null
 
 export function loadKernel32() {
     if (!kernel32) {
-        kernel32 = Deno.dlopen("kernel32.dll", {
+        kernel32 = Deno.dlopen('kernel32.dll', {
             CreateFileW: {
-                parameters: ["pointer", "u32", "u32", "pointer", "u32", "u32", "pointer"],
-                result: "pointer",
+                parameters: ['pointer', 'u32', 'u32', 'pointer', 'u32', 'u32', 'pointer'],
+                result: 'pointer',
             },
             ReadFile: {
-                parameters: ["pointer", "pointer", "u32", "pointer", "pointer"],
-                result: "bool",
+                parameters: ['pointer', 'pointer', 'u32', 'pointer', 'pointer'],
+                result: 'bool',
             },
             WriteFile: {
-                parameters: ["pointer", "pointer", "u32", "pointer", "pointer"],
-                result: "bool",
+                parameters: ['pointer', 'pointer', 'u32', 'pointer', 'pointer'],
+                result: 'bool',
             },
             CloseHandle: {
-                parameters: ["pointer"],
-                result: "bool",
+                parameters: ['pointer'],
+                result: 'bool',
             },
             SetCommTimeouts: {
-                parameters: ["pointer", "pointer"],
-                result: "bool",
-            }
+                parameters: ['pointer', 'pointer'],
+                result: 'bool',
+            },
         })
     }
 
@@ -43,35 +43,35 @@ export let advapi32: any = null
 
 export function loadAdvapi32() {
     if (!advapi32) {
-        advapi32 = Deno.dlopen("advapi32.dll", {
+        advapi32 = Deno.dlopen('advapi32.dll', {
             RegOpenKeyExW: {
                 parameters: [
-                    "u64",      // HKEY (IMPORTANT FIX)
-                    "pointer",  // LPCWSTR
-                    "u32",
-                    "u32",
-                    "pointer",  // PHKEY
+                    'u64', // HKEY (IMPORTANT FIX)
+                    'pointer', // LPCWSTR
+                    'u32',
+                    'u32',
+                    'pointer', // PHKEY
                 ],
-                result: "i32",
+                result: 'i32',
             },
 
             RegEnumValueW: {
                 parameters: [
-                    "u64",      // HKEY
-                    "u32",      // index
-                    "pointer",  // lpValueName
-                    "pointer",  // lpcchValueName
-                    "pointer",  // lpReserved (can be null pointer)
-                    "pointer",  // lpType
-                    "pointer",  // lpData
-                    "pointer",  // lpcbData
+                    'u64', // HKEY
+                    'u32', // index
+                    'pointer', // lpValueName
+                    'pointer', // lpcchValueName
+                    'pointer', // lpReserved (can be null pointer)
+                    'pointer', // lpType
+                    'pointer', // lpData
+                    'pointer', // lpcbData
                 ],
-                result: "i32",
+                result: 'i32',
             },
 
             RegCloseKey: {
-                parameters: ["u64"],
-                result: "i32",
+                parameters: ['u64'],
+                result: 'i32',
             },
         })
     }
@@ -83,43 +83,43 @@ export let setupapi: any = null
 
 export function loadSetupAPI() {
     if (!setupapi) {
-        setupapi = Deno.dlopen("setupapi.dll", {
+        setupapi = Deno.dlopen('setupapi.dll', {
             SetupDiGetClassDevsW: {
-                parameters: ["pointer", "pointer", "pointer", "u32"],
-                result: "pointer",
+                parameters: ['pointer', 'pointer', 'pointer', 'u32'],
+                result: 'pointer',
             },
 
             SetupDiEnumDeviceInfo: {
-                parameters: ["pointer", "u32", "pointer"],
-                result: "bool",
+                parameters: ['pointer', 'u32', 'pointer'],
+                result: 'bool',
             },
 
             SetupDiGetDeviceRegistryPropertyW: {
                 parameters: [
-                    "pointer",
-                    "pointer",
-                    "u32",
-                    "pointer",
-                    "pointer",
-                    "u32",
-                    "pointer",
+                    'pointer',
+                    'pointer',
+                    'u32',
+                    'pointer',
+                    'pointer',
+                    'u32',
+                    'pointer',
                 ],
-                result: "bool",
+                result: 'bool',
             },
 
             SetupDiClassGuidsFromNameW: {
                 parameters: [
-                    "pointer", // LPCWSTR
-                    "pointer", // LPGUID array
-                    "u32",     // GUID array size
-                    "pointer", // required size
+                    'pointer', // LPCWSTR
+                    'pointer', // LPGUID array
+                    'u32', // GUID array size
+                    'pointer', // required size
                 ],
-                result: "bool",
+                result: 'bool',
             },
 
             SetupDiDestroyDeviceInfoList: {
-                parameters: ["pointer"],
-                result: "bool",
+                parameters: ['pointer'],
+                result: 'bool',
             },
         })
     }

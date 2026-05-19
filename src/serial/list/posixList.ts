@@ -4,11 +4,11 @@
  *    See the LICENSE file in the project root for license details.     *
  ************************************************************************/
 
-import type { SerialPortListBackend, SerialPortInfo } from './common.ts'
+import type { SerialPortInfo, SerialPortListBackend } from './common.ts'
 
 export class PosixSerialList implements SerialPortListBackend {
     async list(): Promise<SerialPortInfo[]> {
-        const devDir = "/dev"
+        const devDir = '/dev'
         const ports: SerialPortInfo[] = []
 
         const patterns = [

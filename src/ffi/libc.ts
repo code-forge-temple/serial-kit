@@ -6,98 +6,97 @@
 import { ERRNO } from './types.ts'
 import { isDarwin, isLinux } from '../utils/platform.ts'
 
-
 // Build the dynamic symbols object based on platform
 function buildSymbols() {
-  const baseSymbols = {
-    // File operations
-    open: {
-      parameters: ['buffer', 'i32'] as const,
-      result: 'i32' as const,
-    },
-    close: {
-      parameters: ['i32'] as const,
-      result: 'i32' as const,
-    },
-    read: {
-      parameters: ['i32', 'buffer', 'usize'] as const,
-      result: 'isize' as const,
-      nonblocking: true,
-    },
-    write: {
-      parameters: ['i32', 'buffer', 'usize'] as const,
-      result: 'isize' as const,
-      nonblocking: true,
-    },
+    const baseSymbols = {
+        // File operations
+        open: {
+            parameters: ['buffer', 'i32'] as const,
+            result: 'i32' as const,
+        },
+        close: {
+            parameters: ['i32'] as const,
+            result: 'i32' as const,
+        },
+        read: {
+            parameters: ['i32', 'buffer', 'usize'] as const,
+            result: 'isize' as const,
+            nonblocking: true,
+        },
+        write: {
+            parameters: ['i32', 'buffer', 'usize'] as const,
+            result: 'isize' as const,
+            nonblocking: true,
+        },
 
-    // Terminal control
-    tcgetattr: {
-      parameters: ['i32', 'buffer'] as const,
-      result: 'i32' as const,
-    },
-    tcsetattr: {
-      parameters: ['i32', 'i32', 'buffer'] as const,
-      result: 'i32' as const,
-    },
-    tcflush: {
-      parameters: ['i32', 'i32'] as const,
-      result: 'i32' as const,
-    },
-    tcdrain: {
-      parameters: ['i32'] as const,
-      result: 'i32' as const,
-    },
-    // tcflow removed (unused)
-    tcsendbreak: {
-      parameters: ['i32', 'i32'] as const,
-      result: 'i32' as const,
-    },
+        // Terminal control
+        tcgetattr: {
+            parameters: ['i32', 'buffer'] as const,
+            result: 'i32' as const,
+        },
+        tcsetattr: {
+            parameters: ['i32', 'i32', 'buffer'] as const,
+            result: 'i32' as const,
+        },
+        tcflush: {
+            parameters: ['i32', 'i32'] as const,
+            result: 'i32' as const,
+        },
+        tcdrain: {
+            parameters: ['i32'] as const,
+            result: 'i32' as const,
+        },
+        // tcflow removed (unused)
+        tcsendbreak: {
+            parameters: ['i32', 'i32'] as const,
+            result: 'i32' as const,
+        },
 
-    // Baud rate functions
-    cfsetispeed: {
-      parameters: ['buffer', 'u32'] as const,
-      result: 'i32' as const,
-    },
-    cfsetospeed: {
-      parameters: ['buffer', 'u32'] as const,
-      result: 'i32' as const,
-    },
-    cfgetispeed: {
-      parameters: ['buffer'] as const,
-      result: 'u32' as const,
-    },
-    cfgetospeed: {
-      parameters: ['buffer'] as const,
-      result: 'u32' as const,
-    },
+        // Baud rate functions
+        cfsetispeed: {
+            parameters: ['buffer', 'u32'] as const,
+            result: 'i32' as const,
+        },
+        cfsetospeed: {
+            parameters: ['buffer', 'u32'] as const,
+            result: 'i32' as const,
+        },
+        cfgetispeed: {
+            parameters: ['buffer'] as const,
+            result: 'u32' as const,
+        },
+        cfgetospeed: {
+            parameters: ['buffer'] as const,
+            result: 'u32' as const,
+        },
 
-    // IOCTL for advanced control
-    ioctl: {
-      parameters: ['i32', 'usize', 'buffer'] as const,
-      result: 'i32' as const,
-    },
-    // File status
-    // fcntl removed (unused)
-  }
-
-  // Add platform-specific errno function
-  if (isDarwin()) {
-    return {
-      ...baseSymbols,
-      __error: {
-        parameters: [] as const,
-        result: 'pointer' as const,
-      },
+        // IOCTL for advanced control
+        ioctl: {
+            parameters: ['i32', 'usize', 'buffer'] as const,
+            result: 'i32' as const,
+        },
+        // File status
+        // fcntl removed (unused)
     }
-  } else {
-    return {
-      ...baseSymbols,
-      __errno_location: {
-        parameters: [] as const,
-        result: 'pointer' as const,
-      },
+
+    // Add platform-specific errno function
+    if (isDarwin()) {
+        return {
+            ...baseSymbols,
+            __error: {
+                parameters: [] as const,
+                result: 'pointer' as const,
+            },
+        }
+    } else {
+        return {
+            ...baseSymbols,
+            __errno_location: {
+                parameters: [] as const,
+                result: 'pointer' as const,
+            },
+        }
     }
-  }
 }
 
 // Define the library interface based on platform
@@ -110,114 +109,117 @@ let libc: Deno.DynamicLibrary<typeof libcSymbols> | null = null
  * Get the system library instance
  */
 export function getLibc(): Deno.DynamicLibrary<typeof libcSymbols> {
-  if (!libc) {
-    try {
-      // Determine library paths based on platform
-      let libPaths: string[]
-
-      if (isDarwin()) {
-        // macOS system library
-        libPaths = [
-          'libSystem.dylib',
-          '/usr/lib/libSystem.dylib',
-          '/System/Library/Frameworks/System.framework/System',
-        ]
-      } else if (isLinux()) {
-        // Linux libc locations
-        libPaths = [
-          'libc.so.6',
-          '/lib/x86_64-linux-gnu/libc.so.6',
-          '/lib64/libc.so.6',
-          '/usr/lib/libc.so.6',
-          '/lib/libc.so.6',
-        ]
-      } else {
-        throw new Error(`Unsupported platform: ${isDarwin() ? 'darwin' : 'linux'}`)
-      }
-
-      let lastError: Error | null = null
-
-      for (const path of libPaths) {
+    if (!libc) {
         try {
-          libc = Deno.dlopen(path, libcSymbols)
-          break
-        } catch (err) {
-          lastError = err as Error
+            // Determine library paths based on platform
+            let libPaths: string[]
+
+            if (isDarwin()) {
+                // macOS system library
+                libPaths = [
+                    'libSystem.dylib',
+                    '/usr/lib/libSystem.dylib',
+                    '/System/Library/Frameworks/System.framework/System',
+                ]
+            } else if (isLinux()) {
+                // Linux libc locations
+                libPaths = [
+                    'libc.so.6',
+                    '/lib/x86_64-linux-gnu/libc.so.6',
+                    '/lib64/libc.so.6',
+                    '/usr/lib/libc.so.6',
+                    '/lib/libc.so.6',
+                ]
+            } else {
+                throw new Error(`Unsupported platform: ${isDarwin() ? 'darwin' : 'linux'}`)
+            }
+
+            let lastError: Error | null = null
+
+            for (const path of libPaths) {
+                try {
+                    libc = Deno.dlopen(path, libcSymbols)
+                    break
+                } catch (err) {
+                    lastError = err as Error
+                }
+            }
+
+            if (!libc) {
+                throw lastError ||
+                    new Error(
+                        `Failed to load system library for ${isDarwin() ? 'darwin' : 'linux'}`,
+                    )
+            }
+        } catch (error) {
+            throw new Error(`Failed to load system library: ${error}`)
         }
-      }
-
-      if (!libc) {
-        throw lastError || new Error(`Failed to load system library for ${isDarwin() ? 'darwin' : 'linux'}`)
-      }
-    } catch (error) {
-      throw new Error(`Failed to load system library: ${error}`)
     }
-  }
 
-  return libc
+    return libc
 }
 
 /**
  * Get the current errno value
  */
 export function getErrno(): number {
-  const lib = getLibc()
+    const lib = getLibc()
 
-  // Get errno pointer based on platform
-  let errnoPtr: Deno.PointerValue
+    // Get errno pointer based on platform
+    let errnoPtr: Deno.PointerValue
 
-  if (isDarwin()) {
-    // @ts-expect-error - Platform-specific symbol
-    errnoPtr = lib.symbols.__error()
-  } else {
-    // @ts-expect-error - Platform-specific symbol
-    errnoPtr = lib.symbols.__errno_location()
-  }
+    if (isDarwin()) {
+        // @ts-expect-error - Platform-specific symbol
+        errnoPtr = lib.symbols.__error()
+    } else {
+        // @ts-expect-error - Platform-specific symbol
+        errnoPtr = lib.symbols.__errno_location()
+    }
 
-  if (!errnoPtr) {
-    return 0
-  }
+    if (!errnoPtr) {
+        return 0
+    }
 
-  // Read the errno value from the pointer
-  const view = new Deno.UnsafePointerView(errnoPtr)
-  return view.getInt32(0)
+    // Read the errno value from the pointer
+    const view = new Deno.UnsafePointerView(errnoPtr)
+    return view.getInt32(0)
 }
 
 function isTemporaryError(errno: number): boolean {
-  if (isDarwin()) {
-    return errno === ERRNO.EAGAIN_MACOS || errno === ERRNO.EINTR
-  }
-  // Linux and others treat EAGAIN/EWOULDBLOCK as 11
-  return errno === ERRNO.EAGAIN || errno === ERRNO.EWOULDBLOCK || errno === ERRNO.EINTR
+    if (isDarwin()) {
+        return errno === ERRNO.EAGAIN_MACOS || errno === ERRNO.EINTR
+    }
+    // Linux and others treat EAGAIN/EWOULDBLOCK as 11
+    return errno === ERRNO.EAGAIN || errno === ERRNO.EWOULDBLOCK || errno === ERRNO.EINTR
 }
 
 /**
  * Open a file/device
  */
 export function open(path: string, flags: number): number {
-  const lib = getLibc()
-  const pathBuffer = new TextEncoder().encode(path + '\0')
-  const fd = lib.symbols.open(pathBuffer, flags)
+    const lib = getLibc()
+    const pathBuffer = new TextEncoder().encode(path + '\0')
+    const fd = lib.symbols.open(pathBuffer, flags)
 
-  if (fd === -1) {
-    const errno = getErrno()
-    throw new Error(`Failed to open ${path}: errno ${errno}`)
-  }
+    if (fd === -1) {
+        const errno = getErrno()
+        throw new Error(`Failed to open ${path}: errno ${errno}`)
+    }
 
-  return fd
+    return fd
 }
 
 /**
  * Close a file descriptor
  */
 export function close(fd: number): void {
-  const lib = getLibc()
-  const result = lib.symbols.close(fd)
+    const lib = getLibc()
+    const result = lib.symbols.close(fd)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`Failed to close fd ${fd}: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`Failed to close fd ${fd}: errno ${errno}`)
+    }
 }
 
 /**
@@ -229,20 +231,20 @@ export function close(fd: number): void {
  * - Throws error for actual failures
  */
 export async function read(fd: number, buffer: Uint8Array): Promise<number> {
-  const lib = getLibc()
-  const result = await lib.symbols.read(fd, buffer, BigInt(buffer.length))
+    const lib = getLibc()
+    const result = await lib.symbols.read(fd, buffer, BigInt(buffer.length))
 
-  if (result === -1n) {
-    const errno = getErrno()
+    if (result === -1n) {
+        const errno = getErrno()
 
-    if (isTemporaryError(errno)) {
-      return 0
+        if (isTemporaryError(errno)) {
+            return 0
+        }
+
+        throw new Error(`Read failed: errno ${errno}`)
     }
 
-    throw new Error(`Read failed: errno ${errno}`)
-  }
-
-  return Number(result)
+    return Number(result)
 }
 
 /**
@@ -254,74 +256,74 @@ export async function read(fd: number, buffer: Uint8Array): Promise<number> {
  * - Throws error for actual failures
  */
 export async function write(fd: number, buffer: Uint8Array): Promise<number> {
-  const lib = getLibc()
-  const result = await lib.symbols.write(fd, buffer, BigInt(buffer.length))
+    const lib = getLibc()
+    const result = await lib.symbols.write(fd, buffer, BigInt(buffer.length))
 
-  if (result === -1n) {
-    const errno = getErrno()
+    if (result === -1n) {
+        const errno = getErrno()
 
-    if (isTemporaryError(errno)) {
-      return 0
+        if (isTemporaryError(errno)) {
+            return 0
+        }
+
+        throw new Error(`Write failed: errno ${errno}`)
     }
 
-    throw new Error(`Write failed: errno ${errno}`)
-  }
-
-  return Number(result)
+    return Number(result)
 }
 
 /**
  * Get terminal attributes
  */
 export function tcgetattr(fd: number, termiosBuffer: ArrayBuffer): void {
-  const lib = getLibc()
-  const buffer = new Uint8Array(termiosBuffer)
-  const result = lib.symbols.tcgetattr(fd, buffer)
+    const lib = getLibc()
+    const buffer = new Uint8Array(termiosBuffer)
+    const result = lib.symbols.tcgetattr(fd, buffer)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`tcgetattr failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`tcgetattr failed: errno ${errno}`)
+    }
 }
 
 /**
  * Set terminal attributes
  */
 export function tcsetattr(fd: number, action: number, termiosBuffer: ArrayBuffer): void {
-  const lib = getLibc()
-  const buffer = new Uint8Array(termiosBuffer)
-  const result = lib.symbols.tcsetattr(fd, action, buffer)
+    const lib = getLibc()
+    const buffer = new Uint8Array(termiosBuffer)
+    const result = lib.symbols.tcsetattr(fd, action, buffer)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`tcsetattr failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`tcsetattr failed: errno ${errno}`)
+    }
 }
 
 /**
  * Flush terminal I/O
  */
 export function tcflush(fd: number, queue: number): void {
-  const lib = getLibc()
-  const result = lib.symbols.tcflush(fd, queue)
+    const lib = getLibc()
+    const result = lib.symbols.tcflush(fd, queue)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`tcflush failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`tcflush failed: errno ${errno}`)
+    }
 }
 
 /**
  * Wait for all output to be transmitted
  */
 export function tcdrain(fd: number): void {
-  const lib = getLibc()
-  const result = lib.symbols.tcdrain(fd)
+    const lib = getLibc()
+    const result = lib.symbols.tcdrain(fd)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`tcdrain failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`tcdrain failed: errno ${errno}`)
+    }
 }
 
 /**
@@ -333,68 +335,68 @@ export function tcdrain(fd: number): void {
  * Send break signal
  */
 export function tcsendbreak(fd: number, duration: number): void {
-  const lib = getLibc()
-  const result = lib.symbols.tcsendbreak(fd, duration)
+    const lib = getLibc()
+    const result = lib.symbols.tcsendbreak(fd, duration)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`tcsendbreak failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`tcsendbreak failed: errno ${errno}`)
+    }
 }
 
 /**
  * Set input baud rate
  */
 export function cfsetispeed(termiosBuffer: ArrayBuffer, speed: number): void {
-  const lib = getLibc()
-  const buffer = new Uint8Array(termiosBuffer)
-  const result = lib.symbols.cfsetispeed(buffer, speed)
+    const lib = getLibc()
+    const buffer = new Uint8Array(termiosBuffer)
+    const result = lib.symbols.cfsetispeed(buffer, speed)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`cfsetispeed failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`cfsetispeed failed: errno ${errno}`)
+    }
 }
 
 /**
  * Set output baud rate
  */
 export function cfsetospeed(termiosBuffer: ArrayBuffer, speed: number): void {
-  const lib = getLibc()
-  const buffer = new Uint8Array(termiosBuffer)
-  const result = lib.symbols.cfsetospeed(buffer, speed)
+    const lib = getLibc()
+    const buffer = new Uint8Array(termiosBuffer)
+    const result = lib.symbols.cfsetospeed(buffer, speed)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`cfsetospeed failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`cfsetospeed failed: errno ${errno}`)
+    }
 }
 
 /**
  * Perform ioctl operation
  */
 export function ioctl(fd: number, request: number, argBuffer?: ArrayBuffer): number {
-  const lib = getLibc()
+    const lib = getLibc()
 
-  // Convert ArrayBuffer to Uint8Array for FFI
-  const buffer = argBuffer ? new Uint8Array(argBuffer) : new Uint8Array(0)
+    // Convert ArrayBuffer to Uint8Array for FFI
+    const buffer = argBuffer ? new Uint8Array(argBuffer) : new Uint8Array(0)
 
-  const result = lib.symbols.ioctl(fd, BigInt(request), buffer)
+    const result = lib.symbols.ioctl(fd, BigInt(request), buffer)
 
-  if (result === -1) {
-    const errno = getErrno()
-    throw new Error(`ioctl failed: errno ${errno}`)
-  }
+    if (result === -1) {
+        const errno = getErrno()
+        throw new Error(`ioctl failed: errno ${errno}`)
+    }
 
-  return result
+    return result
 }
 
 /**
  * Clean up and close the libc library
  */
 export function closeLibc(): void {
-  if (libc) {
-    libc.close()
-    libc = null
-  }
+    if (libc) {
+        libc.close()
+        libc = null
+    }
 }

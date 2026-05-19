@@ -7,15 +7,13 @@
 import { isWindows } from '../../utils/platform.ts'
 import { WindowsSerialPort } from './windowsSerialPort.ts'
 import { PosixSerialPort } from './posixSerialPort.ts'
-import type { SerialPortOptions, SerialBackend } from './common.ts'
+import type { SerialBackend, SerialPortOptions } from './common.ts'
 
 export class SerialPort {
     private impl: SerialBackend
 
     constructor(options: SerialPortOptions) {
-        this.impl = isWindows()
-            ? new WindowsSerialPort(options)
-            : new PosixSerialPort(options)
+        this.impl = isWindows() ? new WindowsSerialPort(options) : new PosixSerialPort(options)
 
         if (options.autoOpen ?? true) {
             this.open()

@@ -28,18 +28,18 @@
 // Core API (PUBLIC)
 // =========================
 
-export { SerialPort } from "./src/serial/port/SerialPort.ts"
-export { SerialPortList } from "./src/serial/list/SerialPortList.ts"
+export { SerialPort } from './src/serial/port/SerialPort.ts'
+export { SerialPortList } from './src/serial/list/SerialPortList.ts'
 
 // =========================
 // Types (PUBLIC)
 // =========================
 
 export type {
-  SerialPortOptions,
-  SerialPortSignals,
-  SerialPortError,
-} from "./src/serial/port/common.ts"
+    SerialPortError,
+    SerialPortOptions,
+    SerialPortSignals,
+} from './src/serial/port/common.ts'
 
 // =========================
 // Optional advanced low-level exports
@@ -47,8 +47,4 @@ export type {
 // =========================
 
 // Platform helpers (optional)
-export {
-  isWindows,
-  isLinux,
-  isDarwin,
-} from "./src/utils/platform.ts"
+export { isDarwin, isLinux, isWindows } from './src/utils/platform.ts'

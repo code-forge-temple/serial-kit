@@ -5,42 +5,40 @@
  ************************************************************************/
 
 import {
-    open,
-    read,
-    write,
-    close,
-    tcgetattr,
-    tcsetattr,
-    tcflush,
     cfsetispeed,
     cfsetospeed,
+    close,
+    open,
+    read,
+    tcflush,
+    tcgetattr,
+    tcsetattr,
+    write,
 } from '../../ffi/libc.ts'
 import {
-    createTermiosBuffer,
-    parseTermios,
-    makeRaw,
-    getBaudRateValue,
-    writeTermios,
-    TCSA,
     CFLAG,
+    createTermiosBuffer,
+    getBaudRateValue,
     IFLAG,
+    makeRaw,
+    parseTermios,
+    TCSA,
+    writeTermios,
 } from '../../ffi/termios.ts'
 import { FLUSH, O_FLAGS } from '../../ffi/types.ts'
 import type { SerialBackend, SerialPortOptions } from './common.ts'
-
 
 export class PosixSerialPort implements SerialBackend {
     private fd: number | null = null
     private original: ArrayBuffer | null = null
 
-    constructor(private options: SerialPortOptions) { }
+    constructor(private options: SerialPortOptions) {}
 
     // -------------------------
     // OPEN
     // -------------------------
     open(): void {
-        const flags =
-            O_FLAGS.O_RDWR |
+        const flags = O_FLAGS.O_RDWR |
             O_FLAGS.O_NOCTTY |
             O_FLAGS.O_NONBLOCK
 
