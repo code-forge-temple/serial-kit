@@ -21,6 +21,16 @@ Add serial-kit to your Deno project:
 import { SerialPort, SerialPortList } from "https://raw.githubusercontent.com/code-forge-temple/serial-kit/main/mod.ts";
 ```
 
+## Permissions
+
+serial-kit requires the following Deno permissions to run in your own projects:
+
+```
+deno run --allow-ffi --allow-read --allow-write your_script.ts
+```
+
+These permissions are needed for native serial port access and file operations.
+
 ## Usage Example
 
 ```ts
@@ -49,7 +59,7 @@ port.close()
 
 ## Running Tests
 
-serial-kit tests require permissions for FFI, file, and environment access:
+serial-kit tests require permissions for FFI, file, and (optionally) environment access:
 
 ```
 deno test --allow-ffi --allow-read --allow-write --allow-env --env
@@ -62,6 +72,12 @@ deno test --allow-ffi --allow-read --allow-write --allow-env --env
 - `src/serial/list/` – Serial port enumeration
 - `src/ffi/` – FFI bindings
 - `tests/` – Test files
+
+## Attribution
+
+The files [src/ffi/libc.ts](src/ffi/libc.ts) and [src/ffi/termios.ts](src/ffi/termios.ts) are mainly based on code from [paltaio/deno-serialport](https://github.com/paltaio/deno-serialport).
+
+Many thanks to the original authors for their work.
 
 ## License
 
